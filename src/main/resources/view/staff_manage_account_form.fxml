@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.staff.StaffManageAccountFormController">
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#14222d" height="150.0" stroke="BLACK" strokeType="INSIDE" width="800.0" />
+      <Text fill="WHITE" layoutX="83.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Manage Account" textAlignment="CENTER">
+         <font>
+            <Font name="Poppins Bold" size="72.0" />
+         </font>
+      </Text>
+      <JFXButton buttonType="RAISED" layoutX="497.0" layoutY="494.0" onAction="#btnUpdateOnAction" prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Update" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <Text layoutX="100.0" layoutY="256.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Username">
+         <font>
+            <Font name="Poppins Bold" size="24.0" />
+         </font>
+      </Text>
+      <JFXTextField fx:id="txtUsername" layoutX="100.0" layoutY="259.0" prefHeight="26.0" prefWidth="600.0" />
+      <Text layoutX="103.0" layoutY="322.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password">
+         <font>
+            <Font name="Poppins Bold" size="24.0" />
+         </font>
+      </Text>
+      <JFXPasswordField fx:id="txtPassword" layoutX="100.0" layoutY="325.0" prefHeight="26.0" prefWidth="600.0" />
+      <JFXButton buttonType="RAISED" layoutX="14.0" layoutY="546.0" onAction="#btnDashboardOnAction" prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="&lt;&lt; Dashboard" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <Text layoutX="103.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Re-enter Password">
+         <font>
+            <Font name="Poppins Bold" size="24.0" />
+         </font>
+      </Text>
+      <JFXPasswordField fx:id="txtRePassword" layoutX="100.0" layoutY="393.0" prefHeight="26.0" prefWidth="600.0" />
+      <Text fx:id="txtStaffID" layoutX="633.0" layoutY="175.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: right;" text="Staff ID" textAlignment="RIGHT" AnchorPane.rightAnchor="100.0">
+         <font>
+            <Font name="Poppins Regular" size="18.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

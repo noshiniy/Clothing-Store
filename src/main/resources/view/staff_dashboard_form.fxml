@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.staff.StaffDashboardFormController">
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#14222d" height="150.0" stroke="BLACK" strokeType="INSIDE" width="801.0" />
+      <Text fill="WHITE" layoutX="99.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Staff Dashboard" textAlignment="CENTER" AnchorPane.leftAnchor="99.0" AnchorPane.rightAnchor="99.0">
+         <font>
+            <Font name="Poppins Bold" size="72.0" />
+         </font>
+      </Text>
+      <JFXButton buttonType="RAISED" layoutX="225.0" layoutY="215.0" onAction="#btnManageAccountOnAction" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Manage Account" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="24.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="225.0" layoutY="271.0" onAction="#btnSupplierManagementOnAction" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Supplier Management" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="24.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="225.0" layoutY="326.0" onAction="#btnProductManagementOnAction" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Product Management" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="24.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="225.0" layoutY="381.0" onAction="#btnSupplyManagementOnAction" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Supply Management" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="24.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="225.0" layoutY="436.0" onAction="#btnOrderManagementOnAction" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Order Management" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="24.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="13.0" layoutY="555.0" onAction="#btnHomepageOnAction" prefHeight="30.0" prefWidth="150.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="&lt;&lt; Home Page" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <Text fx:id="txtStaffUsername" layoutX="685.0" layoutY="174.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: right;" text="Staff Username" textAlignment="RIGHT" AnchorPane.rightAnchor="10.0">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>

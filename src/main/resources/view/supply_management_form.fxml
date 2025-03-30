@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.supply.SupplyManagementFormController">
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#14222d" height="125.0" stroke="BLACK" strokeType="INSIDE" width="1000.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <Text fill="WHITE" layoutX="112.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Supply Management" textAlignment="CENTER" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="111.40802001953125">
+         <font>
+            <Font name="Poppins Bold" size="72.0" />
+         </font>
+      </Text>
+      <TableView fx:id="tblSupplyTable" layoutX="21.0" layoutY="163.0" prefHeight="250.0" prefWidth="700.0">
+         <columns>
+            <TableColumn fx:id="colSupplyID" text="SupplyID" />
+            <TableColumn fx:id="colSupplyTableProductID" text="Product ID" />
+            <TableColumn fx:id="colSupplierID" text="SupplierID" />
+            <TableColumn fx:id="colSupplyTableUnitCost" prefWidth="75.0" text="Unit Cost" />
+            <TableColumn fx:id="colSupplyTableQty" prefWidth="75.0" text="Qty" />
+            <TableColumn fx:id="colSupplyTableTotal" prefWidth="100.0" text="Total" />
+            <TableColumn fx:id="colDateTime" prefWidth="210.0" text="Date &amp; Time" />
+         </columns>
+      </TableView>
+      <Text fx:id="txtID" layoutX="21.0" layoutY="151.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: right;" text="ID" textAlignment="RIGHT">
+         <font>
+            <Font name="Poppins Regular" size="18.0" />
+         </font>
+      </Text>
+      <JFXButton buttonType="RAISED" layoutX="21.0" layoutY="612.0" onAction="#btnDashboardOnAction" prefHeight="20.0" prefWidth="150.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="&lt;&lt; Dashboard" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <TextField fx:id="txtSearchField" layoutX="722.0" layoutY="132.0" prefHeight="26.0" prefWidth="180.0" />
+      <JFXButton fx:id="btnSearch" buttonType="RAISED" layoutX="910.0" layoutY="132.0" onAction="#btnSearchOnAction" prefHeight="20.0" prefWidth="75.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Search" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <Label layoutX="732.0" layoutY="196.0" text="Product ID :">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="734.0" layoutY="253.0" text="Name">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="txtName" layoutX="734.0" layoutY="267.0" prefHeight="26.0" prefWidth="250.0" />
+      <Label layoutX="734.0" layoutY="361.0" text="Size">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="734.0" layoutY="305.0" text="Category">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="734.0" layoutY="405.0" text="Unit Cost">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="txtUnitCost" layoutX="734.0" layoutY="420.0" prefHeight="26.0" prefWidth="120.0" />
+      <JFXButton buttonType="RAISED" layoutX="734.0" layoutY="577.0" onAction="#btnAddOnAction" prefHeight="20.0" prefWidth="120.0" style="-fx-background-color: #4CD137; -fx-background-radius: 100;" text="Add" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="866.0" layoutY="577.0" onAction="#btnUpdateOnAction" prefHeight="20.0" prefWidth="120.0" style="-fx-background-color: #FBC531; -fx-background-radius: 100;" text="Update" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="734.0" layoutY="608.0" onAction="#btnDeleteOnAction" prefHeight="20.0" prefWidth="120.0" style="-fx-background-color: #E84118; -fx-background-radius: 100;" text="Delete" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <JFXButton buttonType="RAISED" layoutX="866.0" layoutY="608.0" onAction="#btnClearOnAction" prefHeight="20.0" prefWidth="120.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Clear" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <Label layoutX="734.0" layoutY="451.0" text="Qty">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="txtQty" layoutX="734.0" layoutY="468.0" prefHeight="26.0" prefWidth="120.0" />
+      <JFXComboBox fx:id="cmbCategory" layoutX="734.0" layoutY="323.0" prefHeight="26.0" prefWidth="250.0" />
+      <JFXComboBox fx:id="cmbSize" layoutX="734.0" layoutY="375.0" prefHeight="26.0" prefWidth="250.0" />
+      <Text layoutX="225.0" layoutY="150.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: right;" text="Date:" textAlignment="RIGHT">
+         <font>
+            <Font name="Poppins Regular" size="14.0" />
+         </font>
+      </Text>
+      <Text layoutX="567.0" layoutY="151.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: right;" text="Time:" textAlignment="RIGHT">
+         <font>
+            <Font name="Poppins Regular" size="14.0" />
+         </font>
+      </Text>
+      <TableView fx:id="tblSupplyCart" layoutX="21.0" layoutY="426.0" prefHeight="175.0" prefWidth="700.0">
+         <columns>
+            <TableColumn fx:id="colSupplyCartProductID" text="Product ID" />
+            <TableColumn fx:id="colSupplyCartSupplierId" text="Supplier ID" />
+            <TableColumn fx:id="colSupplyCartName" prefWidth="130.0" text="Name" />
+            <TableColumn fx:id="colSupplyCartCategory" prefWidth="100.0" text="Category" />
+            <TableColumn fx:id="colSupplyCartSize" prefWidth="75.0" text="Size" />
+            <TableColumn fx:id="colSupplyCartUnitCost" prefWidth="75.0" text="Unit Cost" />
+            <TableColumn fx:id="colSupplyCartQty" prefWidth="75.0" text="Qty" />
+            <TableColumn fx:id="colSupplyCartTotal" text="Total" />
+         </columns>
+      </TableView>
+      <JFXButton buttonType="RAISED" layoutX="736.0" layoutY="546.0" onAction="#btnAddSupplyCartOnAction" prefHeight="26.0" prefWidth="250.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="+ Add to Supply Cart" textAlignment="CENTER" textFill="WHITE">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </JFXButton>
+      <Label layoutX="732.0" layoutY="226.0" text="Supplier ID :">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <JFXComboBox fx:id="cmbProductID" layoutX="802.0" layoutY="192.0" prefHeight="26.0" prefWidth="100.0" />
+      <JFXComboBox fx:id="cmbSupplierID" layoutX="802.0" layoutY="221.0" prefHeight="10.0" prefWidth="100.0" />
+      <Label layoutX="730.0" layoutY="170.0" text="Suppy ID :">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="labelSupplyID" layoutX="792.0" layoutY="170.0" text="SP0001">
+         <font>
+            <Font name="Poppins Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label layoutX="866.0" layoutY="406.0" text="Unit Price">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="txtUnitPrice" layoutX="866.0" layoutY="421.0" prefHeight="26.0" prefWidth="120.0" />
+      <Label layoutX="866.0" layoutY="451.0" text="Qty On Hand">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="txtQtyOnHand" layoutX="866.0" layoutY="468.0" prefHeight="26.0" prefWidth="120.0" />
+      <Label layoutX="734.0" layoutY="496.0" text="Total">
+         <font>
+            <Font name="Poppins Regular" size="12.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="txtTotal" layoutX="734.0" layoutY="510.0" prefHeight="26.0" prefWidth="250.0" />
+      <Label fx:id="lblDate" layoutX="272.0" layoutY="135.0" text="2024.10.01">
+         <font>
+            <Font name="Poppins Bold" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblTime" layoutX="614.0" layoutY="137.0" text="23:59:59">
+         <font>
+            <Font name="Poppins Bold" size="14.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

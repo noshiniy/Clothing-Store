@@ -1,0 +1,1424 @@
+warning: in the working copy of 'src/main/resources/view/admin_dashboard_form.fxml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/main/resources/view/order_management_form.fxml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/main/resources/view/supply_management_form.fxml', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/main/java/controller/admin/AdminDashboardFormController.java b/src/main/java/controller/admin/AdminDashboardFormController.java[m
+[1mindex bf6073b..e6f7e3a 100644[m
+[1m--- a/src/main/java/controller/admin/AdminDashboardFormController.java[m
+[1m+++ b/src/main/java/controller/admin/AdminDashboardFormController.java[m
+[36m@@ -1,5 +1,6 @@[m
+ package controller.admin;[m
+ [m
+[32m+[m[32mimport com.jfoenix.controls.JFXButton;[m
+ import controller.order.OrderManagementFormController;[m
+ import controller.product.ProductManagementFormController;[m
+ import controller.supplier.SupplierManagementFormController;[m
+[36m@@ -8,20 +9,22 @@[m [mimport entity.AdminEntity;[m
+ import javafx.event.ActionEvent;[m
+ import javafx.fxml.FXML;[m
+ import javafx.fxml.FXMLLoader;[m
+[32m+[m[32mimport javafx.fxml.Initializable;[m
+ import javafx.scene.Node;[m
+ import javafx.scene.Parent;[m
+ import javafx.scene.Scene;[m
+ import javafx.scene.text.Text;[m
+ import javafx.stage.Stage;[m
+[31m-import service.ServiceFactory;[m
+[31m-import service.custom.AdminService;[m
+[31m-import service.custom.impl.AdminServiceImpl;[m
+ import util.AdminSession;[m
+[31m-import util.ServiceType;[m
+ [m
+ import java.io.IOException;[m
+[32m+[m[32mimport java.net.URL;[m
+[32m+[m[32mimport java.util.ResourceBundle;[m
+ [m
+[31m-public class AdminDashboardFormController {[m
+[32m+[m[32mpublic class AdminDashboardFormController implements Initializable {[m
+[32m+[m
+[32m+[m[32m    @FXML[m
+[32m+[m[32m    private JFXButton btnReports;[m
+ [m
+     @FXML[m
+     private Text txtAdminUsername;[m
+[36m@@ -79,8 +82,9 @@[m [mpublic class AdminDashboardFormController {[m
+             FXMLLoader loader = new FXMLLoader(getClass().getResource("../../view/order_management_form.fxml"));[m
+             Parent root = loader.load();[m
+ [m
+[31m-            OrderManagementFormController orderController = loader.getController();[m
+[31m-            orderController.setRole("Admin");[m
+[32m+[m[32m            OrderManagementFormController controller = loader.getController();[m
+[32m+[m[32m            AdminEntity admin = AdminSession.getInstance().getAdmin();[m
+[32m+[m[32m            controller.setRoleAndUser("Admin", admin.getAdminId());[m
+ [m
+             Stage stage = new Stage();[m
+             stage.setScene(new Scene(root));[m
+[36m@@ -197,4 +201,8 @@[m [mpublic class AdminDashboardFormController {[m
+ [m
+     }[m
+ [m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public void initialize(URL url, ResourceBundle resourceBundle) {[m
+[32m+[m[32m        btnReports.setVisible(false);[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/main/java/controller/order/OrderManagementFormController.java b/src/main/java/controller/order/OrderManagementFormController.java[m
+[1mindex 3bd12e3..82c5afd 100644[m
+[1m--- a/src/main/java/controller/order/OrderManagementFormController.java[m
+[1m+++ b/src/main/java/controller/order/OrderManagementFormController.java[m
+[36m@@ -1,10 +1,17 @@[m
+ package controller.order;[m
+ [m
+[32m+[m[32mimport com.jfoenix.controls.JFXButton;[m
+ import com.jfoenix.controls.JFXComboBox;[m
+ import com.jfoenix.controls.JFXTextField;[m
+[32m+[m[32mimport controller.admin.AdminDashboardFormController;[m
+[32m+[m[32mimport controller.staff.StaffDashboardFormController;[m
+[32m+[m[32mimport entity.*;[m
+ import javafx.animation.Animation;[m
+ import javafx.animation.KeyFrame;[m
+ import javafx.animation.Timeline;[m
+[32m+[m[32mimport javafx.beans.property.SimpleStringProperty;[m
+[32m+[m[32mimport javafx.collections.FXCollections;[m
+[32m+[m[32mimport javafx.collections.ObservableList;[m
+ import javafx.event.ActionEvent;[m
+ import javafx.fxml.FXML;[m
+ import javafx.fxml.FXMLLoader;[m
+[36m@@ -12,76 +19,92 @@[m [mimport javafx.fxml.Initializable;[m
+ import javafx.scene.Node;[m
+ import javafx.scene.Parent;[m
+ import javafx.scene.Scene;[m
+[31m-import javafx.scene.control.Label;[m
+[31m-import javafx.scene.control.TableColumn;[m
+[31m-import javafx.scene.control.TableView;[m
+[31m-import javafx.scene.control.TextField;[m
+[32m+[m[32mimport javafx.scene.control.*;[m
+[32m+[m[32mimport javafx.scene.control.cell.PropertyValueFactory;[m
+[32m+[m[32mimport javafx.scene.input.MouseEvent;[m
+[32m+[m[32mimport javafx.scene.layout.HBox;[m
+ import javafx.scene.text.Text;[m
+ import javafx.stage.Stage;[m
+ import javafx.util.Duration;[m
+[32m+[m[32mimport service.ServiceFactory;[m
+[32m+[m[32mimport service.custom.OrderDetailService;[m
+[32m+[m[32mimport service.custom.OrderService;[m
+[32m+[m[32mimport service.custom.ProductService;[m
+[32m+[m[32mimport service.custom.StaffService;[m
+[32m+[m[32mimport util.AdminSession;[m
+[32m+[m[32mimport util.AlertUtil;[m
+[32m+[m[32mimport util.ServiceType;[m
+[32m+[m[32mimport util.StaffSession;[m
+ [m
+ import java.io.IOException;[m
+[32m+[m[32mimport java.math.BigDecimal;[m
+ import java.net.URL;[m
+ import java.text.SimpleDateFormat;[m
+[32m+[m[32mimport java.time.LocalDateTime;[m
+ import java.time.LocalTime;[m
+[32m+[m[32mimport java.util.ArrayList;[m
+ import java.util.Date;[m
+[32m+[m[32mimport java.util.List;[m
+ import java.util.ResourceBundle;[m
+ [m
+ public class OrderManagementFormController implements Initializable {[m
+ [m
+     @FXML[m
+[31m-    private JFXComboBox<?> cmbProductID;[m
+[32m+[m[32m    private JFXComboBox<String> cmbProductID;[m
+ [m
+     @FXML[m
+[31m-    private JFXComboBox<?> cmbSupplyID;[m
+[32m+[m[32m    private JFXComboBox<String> cmbStaffID;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colAction;[m
+[32m+[m[32m    private TableColumn<CartEntity, Void> colAction;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colCartDiscount;[m
+[32m+[m[32m    private TableColumn<CartEntity, BigDecimal> colCartDiscount;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colCartProduct;[m
+[32m+[m[32m    private TableColumn<CartEntity, String> colCartProduct;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colCartProductID;[m
+[32m+[m[32m    private TableColumn<CartEntity, String> colCartProductID;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colCartQty;[m
+[32m+[m[32m    private TableColumn<CartEntity, Integer> colCartQty;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colCartSize;[m
+[32m+[m[32m    private TableColumn<CartEntity, String> colCartSize;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colCartTotal;[m
+[32m+[m[32m    private TableColumn<CartEntity, BigDecimal> colCartTotal;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colCartUnitPrice;[m
+[32m+[m[32m    private TableColumn<CartEntity, BigDecimal> colCartUnitPrice;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colOrderDetailsDiscount;[m
+[32m+[m[32m    private TableView<OrderDetailEntity> tblOrderDetails;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colOrderDetailsOrderID;[m
+[32m+[m[32m    private TableColumn<OrderDetailEntity, BigDecimal> colOrderDetailsDiscount;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colOrderDetailsProduct;[m
+[32m+[m[32m    private TableColumn<OrderDetailEntity, String> colOrderDetailsOrderID;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colOrderDetailsProductID;[m
+[32m+[m[32m    private TableColumn<OrderDetailEntity, String> colOrderDetailsProduct;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colOrderDetailsQty;[m
+[32m+[m[32m    private TableColumn<OrderDetailEntity, String> colOrderDetailsProductID;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colOrderDetailsSize;[m
+[32m+[m[32m    private TableColumn<OrderDetailEntity, Integer> colOrderDetailsQty;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colOrderDetailsTotal;[m
+[32m+[m[32m    private TableColumn<OrderDetailEntity, String> colOrderDetailsSize;[m
+ [m
+     @FXML[m
+[31m-    private TableColumn<?, ?> colOrderDetailsUnitPrice;[m
+[32m+[m[32m    private TableColumn<OrderDetailEntity, BigDecimal> colOrderDetailsTotal;[m
+[32m+[m
+[32m+[m[32m    @FXML[m
+[32m+[m[32m    private TableColumn<OrderDetailEntity, BigDecimal> colOrderDetailsUnitPrice;[m
+ [m
+     @FXML[m
+     private Label labelOrderID;[m
+[36m@@ -99,10 +122,7 @@[m [mpublic class OrderManagementFormController implements Initializable {[m
+     private Label lblTime;[m
+ [m
+     @FXML[m
+[31m-    private TableView<?> tblCart;[m
+[31m-[m
+[31m-    @FXML[m
+[31m-    private TableView<?> tblOrderDetails;[m
+[32m+[m[32m    private TableView<CartEntity> tblCart;[m
+ [m
+     @FXML[m
+     private JFXTextField txtCategory;[m
+[36m@@ -137,40 +157,361 @@[m [mpublic class OrderManagementFormController implements Initializable {[m
+     @FXML[m
+     private JFXTextField txtUnitPrice;[m
+ [m
+[32m+[m[32m    @FXML[m
+[32m+[m[32m    private JFXButton btnSearch;[m
+[32m+[m
+     private String role;[m
+ [m
+[31m-    public void setRole(String role) {[m
+[32m+[m[32m    private final OrderService orderService = ServiceFactory.getInstance().getServiceType(ServiceType.ORDER_SERVICE);[m
+[32m+[m[32m    private final OrderDetailService orderDetailService = ServiceFactory.getInstance().getServiceType(ServiceType.ORDER_DETAIL_SERVICE);[m
+[32m+[m[32m    private final ProductService productService = ServiceFactory.getInstance().getServiceType(ServiceType.PRODUCT_SERVICE);[m
+[32m+[m[32m    private final StaffService staffService = ServiceFactory.getInstance().getServiceType(ServiceType.STAFF_SERVICE);[m
+[32m+[m
+[32m+[m[32m    private ObservableList<CartEntity> cartItems = FXCollections.observableArrayList();[m
+[32m+[m
+[32m+[m[32m    public void setRoleAndUser(String role, String id) {[m
+         this.role = role;[m
+[32m+[m[32m        txtID.setText(id);[m
+     }[m
+ [m
+     @Override[m
+     public void initialize(URL url, ResourceBundle resourceBundle) {[m
+         loadDateAndTime();[m
+[32m+[m
+[32m+[m[32m        String initialOrderId = orderService.generateOrderId();[m
+[32m+[m[32m        labelOrderID.setText(initialOrderId);[m
+[32m+[m
+[32m+[m[32m        loadStaffIds();[m
+[32m+[m[32m        loadProductIds();[m
+[32m+[m
+[32m+[m[32m        cmbProductID.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {[m
+[32m+[m[32m            if (newValue != null) {[m
+[32m+[m[32m                loadProductDetails(newValue);[m
+[32m+[m[32m            }[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        initializeCart();[m
+[32m+[m[32m        initializeListeners();[m
+[32m+[m[32m        initializeOrderDetailTable();[m
+[32m+[m
+[32m+[m[32m        txtDiscount.setText("0");[m
+[32m+[m[32m        lblNetDiscount.setText("0");[m
+[32m+[m[32m        lblNetTotal.setText("0");[m
+[32m+[m
+[32m+[m[32m        btnSearch.setVisible(false);[m
+[32m+[m[32m        txtSearchField.setVisible(false);[m
+[32m+[m
+[32m+[m[32m        tblOrderDetails.setOnMouseClicked(this::handleMouseClick);[m
+[32m+[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void initializeOrderDetailTable() {[m
+[32m+[m[32m        colOrderDetailsOrderID.setCellValueFactory(cellData ->[m
+[32m+[m[32m                new SimpleStringProperty(cellData.getValue().getId().getOrderId()));[m
+[32m+[m
+[32m+[m[32m        colOrderDetailsProductID.setCellValueFactory(cellData ->[m
+[32m+[m[32m                new SimpleStringProperty(cellData.getValue().getId().getProductId()));[m
+[32m+[m
+[32m+[m[32m        colOrderDetailsProduct.setCellValueFactory(cellData -> {[m
+[32m+[m[32m            String productId = cellData.getValue().getId().getProductId();[m
+[32m+[m[32m            ProductEntity product = productService.findProductById(productId);[m
+[32m+[m[32m            return new SimpleStringProperty(product != null ? product.getName() : "Unknown");[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        colOrderDetailsSize.setCellValueFactory(cellData -> {[m
+[32m+[m[32m            String productId = cellData.getValue().getId().getProductId();[m
+[32m+[m[32m            ProductEntity product = productService.findProductById(productId);[m
+[32m+[m[32m            return new SimpleStringProperty(product != null ? product.getSize() : "Unknown");[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        colOrderDetailsUnitPrice.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));[m
+[32m+[m[32m        colOrderDetailsQty.setCellValueFactory(new PropertyValueFactory<>("qty"));[m
+[32m+[m[32m        colOrderDetailsDiscount.setCellValueFactory(new PropertyValueFactory<>("discount"));[m
+[32m+[m[32m        colOrderDetailsTotal.setCellValueFactory(new PropertyValueFactory<>("total"));[m
+[32m+[m
+[32m+[m[32m        loadOrderDetails();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void loadOrderDetails() {[m
+[32m+[m[32m        List<OrderDetailEntity> orderDetailEntities = orderDetailService.findAllOrderDetails();[m
+[32m+[m
+[32m+[m[32m        ObservableList<OrderDetailEntity> orderDetailList = FXCollections.observableArrayList(orderDetailEntities);[m
+[32m+[m[32m        tblOrderDetails.setItems(orderDetailList);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void initializeListeners() {[m
+[32m+[m[32m        txtUnitPrice.textProperty().addListener((observable, oldValue, newValue) -> calculateAndSetTotal());[m
+[32m+[m[32m        txtQty.textProperty().addListener((observable, oldValue, newValue) -> calculateAndSetTotal());[m
+[32m+[m[32m        txtDiscount.textProperty().addListener((observable, oldValue, newValue) -> calculateAndSetTotal());[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void initializeCart() {[m
+[32m+[m[32m        colCartProductID.setCellValueFactory(new PropertyValueFactory<>("productId"));[m
+[32m+[m[32m        colCartProduct.setCellValueFactory(new PropertyValueFactory<>("productName"));[m
+[32m+[m[32m        colCartSize.setCellValueFactory(new PropertyValueFactory<>("size"));[m
+[32m+[m[32m        colCartUnitPrice.setCellValueFactory(new PropertyValueFactory<>("unitPrice"));[m
+[32m+[m[32m        colCartQty.setCellValueFactory(new PropertyValueFactory<>("quantity"));[m
+[32m+[m[32m        colCartDiscount.setCellValueFactory(new PropertyValueFactory<>("discount"));[m
+[32m+[m[32m        colCartTotal.setCellValueFactory(new PropertyValueFactory<>("total"));[m
+[32m+[m
+[32m+[m[32m        colAction.setCellFactory(param -> new TableCell<CartEntity, Void>() {[m
+[32m+[m[32m            private final JFXButton btnEdit = new JFXButton("Edit");[m
+[32m+[m[32m            private final JFXButton btnDelete = new JFXButton("Delete");[m
+[32m+[m
+[32m+[m[32m            {[m
+[32m+[m[32m                btnEdit.setStyle([m
+[32m+[m[32m                        "-fx-background-color: #4CAF50; " +[m
+[32m+[m[32m                                "-fx-text-fill: white; " +[m
+[32m+[m[32m                                "-fx-font-weight: bold; " +[m
+[32m+[m[32m                                "-fx-border-radius: 5px; " +[m
+[32m+[m[32m                                "-fx-background-radius: 5px; " +[m
+[32m+[m[32m                                "-fx-font-size: 10px;"[m
+[32m+[m[32m                );[m
+[32m+[m
+[32m+[m[32m                btnDelete.setStyle([m
+[32m+[m[32m                        "-fx-background-color: #f44336; " +[m
+[32m+[m[32m                                "-fx-text-fill: white; " +[m
+[32m+[m[32m                                "-fx-font-weight: bold; " +[m
+[32m+[m[32m                                "-fx-border-radius: 5px; " +[m
+[32m+[m[32m                                "-fx-background-radius: 5px; " +[m
+[32m+[m[32m                                "-fx-font-size: 10px;"[m
+[32m+[m[32m                );[m
+[32m+[m
+[32m+[m[32m                btnEdit.setOnAction(event -> {[m
+[32m+[m[32m                    CartEntity cartItem = getTableView().getItems().get(getIndex());[m
+[32m+[m[32m                    if (cartItem != null) {[m
+[32m+[m[32m                        cmbProductID.setValue(cartItem.getProductId());[m
+[32m+[m[32m                        txtProduct.setText(cartItem.getProductName());[m
+[32m+[m[32m                        txtSize.setText(cartItem.getSize());[m
+[32m+[m[32m                        txtUnitPrice.setText(cartItem.getUnitPrice().toString());[m
+[32m+[m[32m                        txtQty.setText(String.valueOf(cartItem.getQuantity()));[m
+[32m+[m[32m                        txtDiscount.setText(cartItem.getDiscount().toString());[m
+[32m+[m[32m                        txtTotal.setText(cartItem.getTotal().toString());[m
+[32m+[m
+[32m+[m[32m                        getTableView().getItems().remove(cartItem);[m
+[32m+[m[32m                        tblCart.refresh();[m
+[32m+[m[32m                        calculateNetDiscountAndTotal();[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                });[m
+[32m+[m
+[32m+[m[32m                btnDelete.setOnAction(event -> {[m
+[32m+[m[32m                    CartEntity cartItem = getTableView().getItems().get(getIndex());[m
+[32m+[m[32m                    if (cartItem != null) {[m
+[32m+[m[32m                        getTableView().getItems().remove(cartItem);[m
+[32m+[m[32m                        tblCart.refresh();[m
+[32m+[m[32m                        calculateNetDiscountAndTotal();[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                });[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            @Override[m
+[32m+[m[32m            protected void updateItem(Void item, boolean empty) {[m
+[32m+[m[32m                super.updateItem(item, empty);[m
+[32m+[m[32m                if (empty) {[m
+[32m+[m[32m                    setGraphic(null);[m
+[32m+[m[32m                } else {[m
+[32m+[m[32m                    HBox actionButtons = new HBox(5);[m
+[32m+[m[32m                    actionButtons.getChildren().addAll(btnEdit, btnDelete);[m
+[32m+[m[32m                    setGraphic(actionButtons);[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m        });[m
+[32m+[m
+[32m+[m[32m        tblCart.setItems(cartItems);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void loadProductDetails(String productId) {[m
+[32m+[m[32m        ProductEntity product = productService.findProductById(productId);[m
+[32m+[m
+[32m+[m[32m        if (product != null) {[m
+[32m+[m[32m            txtProduct.setText(product.getName());[m
+[32m+[m[32m            txtCategory.setText(product.getCategory());[m
+[32m+[m[32m            txtSize.setText(product.getSize());[m
+[32m+[m[32m            txtUnitPrice.setText(String.valueOf(product.getUnitPrice()));[m
+[32m+[m[32m        } else {[m
+[32m+[m[32m            txtProduct.clear();[m
+[32m+[m[32m            txtUnitPrice.clear();[m
+[32m+[m[32m            txtCategory.clear();[m
+[32m+[m[32m            txtSize.clear();[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void loadProductIds() {[m
+[32m+[m[32m        List<ProductEntity> productList = productService.findAllProducts();[m
+[32m+[m[32m        ObservableList<String> productIds = FXCollections.observableArrayList();[m
+[32m+[m
+[32m+[m[32m        for (ProductEntity product : productList) {[m
+[32m+[m[32m            productIds.add(product.getProductId());[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        cmbProductID.setItems(productIds);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void loadStaffIds() {[m
+[32m+[m[32m        List<StaffEntity> staffList = staffService.getAllStaffMembers();[m
+[32m+[m[32m        ObservableList<String> staffIds = FXCollections.observableArrayList();[m
+[32m+[m
+[32m+[m[32m        for (StaffEntity staff : staffList) {[m
+[32m+[m[32m            staffIds.add(staff.getStaffId());[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        cmbStaffID.setItems(staffIds);[m
+     }[m
+ [m
+[32m+[m[32m    private void calculateAndSetTotal() {[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            BigDecimal unitPrice = new BigDecimal(txtUnitPrice.getText());[m
+[32m+[m[32m            int quantity = Integer.parseInt(txtQty.getText());[m
+[32m+[m[32m            BigDecimal discount = new BigDecimal(txtDiscount.getText());[m
+[32m+[m
+[32m+[m[32m            BigDecimal total = unitPrice.multiply(BigDecimal.valueOf(quantity))[m
+[32m+[m[32m                    .subtract(BigDecimal.valueOf(quantity).multiply(discount));[m
+[32m+[m
+[32m+[m[32m            txtTotal.setText(total.toString());[m
+[32m+[m[32m        } catch (NumberFormatException e) {[m
+[32m+[m[32m            txtTotal.clear();[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m
+     @FXML[m
+     void btnAddCartOnAction(ActionEvent event) {[m
+[32m+[m[32m        if (!validateFields()) {[m
+[32m+[m[32m            return;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        String productId = cmbProductID.getValue();[m
+[32m+[m[32m        String productName = txtProduct.getText();[m
+[32m+[m[32m        String size = txtSize.getText();[m
+[32m+[m[32m        BigDecimal unitPrice = new BigDecimal(txtUnitPrice.getText());[m
+[32m+[m[32m        int quantity = Integer.parseInt(txtQty.getText());[m
+[32m+[m[32m        BigDecimal discount = new BigDecimal(txtDiscount.getText());[m
+[32m+[m[32m        BigDecimal total = unitPrice.multiply(BigDecimal.valueOf(quantity))[m
+[32m+[m[32m                .subtract(BigDecimal.valueOf(quantity).multiply(discount));[m
+[32m+[m
+[32m+[m[32m        CartEntity cartItem = new CartEntity(productId, productName, size, unitPrice, quantity, discount, total);[m
+[32m+[m[32m        cartItems.add(cartItem);[m
+[32m+[m
+[32m+[m[32m        tblCart.setItems(cartItems);[m
+[32m+[m[32m        tblCart.refresh();[m
+[32m+[m[32m        clearForm();[m
+[32m+[m
+[32m+[m[32m        calculateNetDiscountAndTotal();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void calculateNetDiscountAndTotal() {[m
+[32m+[m[32m        BigDecimal netDiscount = BigDecimal.ZERO;[m
+[32m+[m[32m        BigDecimal netTotal = BigDecimal.ZERO;[m
+[32m+[m
+[32m+[m[32m        for (CartEntity item : cartItems) {[m
+[32m+[m[32m            BigDecimal discountAmount = item.getDiscount().multiply(BigDecimal.valueOf(item.getQuantity()));[m
+[32m+[m[32m            netDiscount = netDiscount.add(discountAmount);[m
+[32m+[m[32m            netTotal = netTotal.add(item.getTotal());[m
+[32m+[m[32m        }[m
+ [m
+[32m+[m[32m        lblNetDiscount.setText(netDiscount.toString());[m
+[32m+[m[32m        lblNetTotal.setText(netTotal.toString());[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private void clearForm() {[m
+[32m+[m[32m        cmbProductID.setValue(null);[m
+[32m+[m[32m        txtProduct.clear();[m
+[32m+[m[32m        txtCategory.clear();[m
+[32m+[m[32m        txtSize.clear();[m
+[32m+[m[32m        txtUnitPrice.clear();[m
+[32m+[m[32m        txtQty.clear();[m
+[32m+[m[32m        txtDiscount.setText("0");[m
+[32m+[m[32m        txtTotal.clear();[m
+     }[m
+ [m
+     @FXML[m
+     void btnAddOnAction(ActionEvent event) {[m
+[32m+[m[32m        if (!validateFields()) {[m
+[32m+[m[32m            return;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        String orderId = labelOrderID.getText();[m
+[32m+[m[32m        String staffId = cmbStaffID.getValue();[m
+[32m+[m[32m        String customerEmail = txtCustomerEmail.getText();[m
+[32m+[m[32m        String customerContact = txtCustomerContact.getText();[m
+[32m+[m
+[32m+[m[32m        BigDecimal netTotal = calculateNetTotal();[m
+[32m+[m[32m        BigDecimal totalDiscount = calculateTotalDiscount();[m
+[32m+[m
+[32m+[m[32m        List<OrderDetailEntity> orderDetails = new ArrayList<>();[m
+[32m+[m[32m        for (CartEntity cartItem : cartItems) {[m
+[32m+[m[32m            OrderDetailEntity orderDetail = new OrderDetailEntity([m
+[32m+[m[32m                    new OrderDetailId(orderId, cartItem.getProductId()),[m
+[32m+[m[32m                    cartItem.getUnitPrice(),[m
+[32m+[m[32m                    cartItem.getQuantity(),[m
+[32m+[m[32m                    cartItem.getDiscount(),[m
+[32m+[m[32m                    cartItem.getTotal()[m
+[32m+[m[32m            );[m
+[32m+[m[32m            orderDetails.add(orderDetail);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        OrderEntity order = new OrderEntity(orderId, netTotal, totalDiscount, LocalDateTime.now(), staffId, customerEmail, customerContact);[m
+[32m+[m[32m        order.setOrderDetails(orderDetails);[m
+[32m+[m
+[32m+[m[32m        boolean isOrderAdded = orderService.addOrder(order);[m
+[32m+[m[32m        if (isOrderAdded) {[m
+[32m+[m[32m            cartItems.clear();[m
+[32m+[m[32m            tblCart.refresh();[m
+[32m+[m[32m            clearForm();[m
+[32m+[m[32m            lblNetDiscount.setText("0");[m
+[32m+[m[32m            lblNetTotal.setText("0");[m
+[32m+[m
+[32m+[m[32m            String newOrderId = orderService.generateOrderId();[m
+[32m+[m[32m            labelOrderID.setText(newOrderId);[m
+ [m
+[32m+[m[32m            AlertUtil.showAlert("Success", "Order has been placed successfully.", null, javafx.scene.control.Alert.AlertType.INFORMATION);[m
+[32m+[m[32m        } else {[m
+[32m+[m[32m            AlertUtil.showAlert("Error", "Failed to place the order. Please try again.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m        }[m
+     }[m
+ [m
+     @FXML[m
+     void btnDeleteOnAction(ActionEvent event) {[m
+[32m+[m[32m        OrderDetailEntity selectedOrderDetail = tblOrderDetails.getSelectionModel().getSelectedItem();[m
+ [m
+[31m-    }[m
+[32m+[m[32m        if (selectedOrderDetail != null) {[m
+[32m+[m[32m            tblOrderDetails.getItems().remove(selectedOrderDetail);[m
+[32m+[m[32m            tblOrderDetails.refresh();[m
+ [m
+[31m-    @FXML[m
+[31m-    void btnSearchOnAction(ActionEvent event) {[m
+[32m+[m[32m            AlertUtil.showAlert("Success", "Order detail deleted successfully.", null, javafx.scene.control.Alert.AlertType.INFORMATION);[m
+ [m
+[32m+[m[32m            calculateNetDiscountAndTotal();[m
+[32m+[m[32m        } else {[m
+[32m+[m[32m            AlertUtil.showAlert("Error", "Please select an order detail to delete.", null, javafx.scene.control.Alert.AlertType.WARNING);[m
+[32m+[m[32m        }[m
+     }[m
+ [m
+     @FXML[m
+     void btnUpdateOnAction(ActionEvent event) {[m
+[32m+[m[32m        if (!validateFields()) {[m
+[32m+[m[32m            return;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        OrderDetailEntity selectedOrderDetail = tblOrderDetails.getSelectionModel().getSelectedItem();[m
+[32m+[m
+[32m+[m[32m        if (selectedOrderDetail != null) {[m
+[32m+[m[32m            selectedOrderDetail.setQty(Integer.parseInt(txtQty.getText()));[m
+[32m+[m[32m            selectedOrderDetail.setDiscount(new BigDecimal(txtDiscount.getText()));[m
+ [m
+[32m+[m[32m            BigDecimal unitPrice = selectedOrderDetail.getUnitPrice();[m
+[32m+[m[32m            BigDecimal discount = selectedOrderDetail.getDiscount();[m
+[32m+[m[32m            BigDecimal total = unitPrice.multiply(BigDecimal.valueOf(selectedOrderDetail.getQty()))[m
+[32m+[m[32m                    .subtract(BigDecimal.valueOf(selectedOrderDetail.getQty()).multiply(discount));[m
+[32m+[m[32m            selectedOrderDetail.setTotal(total);[m
+[32m+[m
+[32m+[m[32m            tblOrderDetails.refresh();[m
+[32m+[m
+[32m+[m[32m            AlertUtil.showAlert("Success", "Order detail updated successfully.", null, javafx.scene.control.Alert.AlertType.INFORMATION);[m
+[32m+[m
+[32m+[m[32m            calculateNetDiscountAndTotal();[m
+[32m+[m[32m        } else {[m
+[32m+[m[32m            AlertUtil.showAlert("Error", "Please select an order detail to update.", null, javafx.scene.control.Alert.AlertType.WARNING);[m
+[32m+[m[32m        }[m
+     }[m
+ [m
+     @FXML[m
+[36m@@ -179,13 +520,22 @@[m [mpublic class OrderManagementFormController implements Initializable {[m
+             FXMLLoader loader;[m
+             if (role.equals("Admin")) {[m
+                 loader = new FXMLLoader(getClass().getResource("../../view/admin_dashboard_form.fxml"));[m
+[32m+[m[32m                Parent root = loader.load();[m
+[32m+[m
+[32m+[m[32m                AdminDashboardFormController adminDashboardFormController = loader.getController();[m
+[32m+[m[32m                AdminEntity admin = AdminSession.getInstance().getAdmin();[m
+[32m+[m[32m                adminDashboardFormController.setAdminUsername(admin.getUsername());[m
+             } else {[m
+                 loader = new FXMLLoader(getClass().getResource("../../view/staff_dashboard_form.fxml"));[m
+[32m+[m[32m                Parent root = loader.load();[m
+[32m+[m
+[32m+[m[32m                StaffDashboardFormController controller = loader.getController();[m
+[32m+[m[32m                StaffEntity staff = StaffSession.getInstance().getStaff();[m
+[32m+[m[32m                controller.setStaffUsername(staff.getUsername());[m
+             }[m
+[31m-            Parent root = loader.load();[m
+ [m
+             Stage stage = new Stage();[m
+[31m-            stage.setScene(new Scene(root));[m
+[32m+[m[32m            stage.setScene(new Scene(loader.getRoot()));[m
+             stage.setTitle(role + " Dashboard");[m
+             stage.setResizable(false);[m
+             stage.show();[m
+[36m@@ -201,9 +551,39 @@[m [mpublic class OrderManagementFormController implements Initializable {[m
+ [m
+     @FXML[m
+     void btnClearOnAction(ActionEvent event) {[m
+[32m+[m[32m        clearForm();[m
+[32m+[m[32m        txtCustomerContact.clear();[m
+[32m+[m[32m        txtCustomerEmail.clear();[m
+[32m+[m[32m        tblCart.refresh();[m
+[32m+[m[32m        lblNetDiscount.setText("0");[m
+[32m+[m[32m        lblNetTotal.setText("0");[m
+[32m+[m
+[32m+[m[32m        String initialOrderId = orderService.generateOrderId();[m
+[32m+[m[32m        labelOrderID.setText(initialOrderId);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @FXML[m
+[32m+[m[32m    void btnSearchOnAction(ActionEvent event) {[m
+[32m+[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    private BigDecimal calculateNetTotal() {[m
+[32m+[m[32m        BigDecimal total = BigDecimal.ZERO;[m
+[32m+[m[32m        for (CartEntity cartItem : cartItems) {[m
+[32m+[m[32m            total = total.add(cartItem.getTotal());[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return total;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private BigDecimal calculateTotalDiscount() {[m
+[32m+[m[32m        BigDecimal discount = BigDecimal.ZERO;[m
+[32m+[m[32m        for (CartEntity cartItem : cartItems) {[m
+[32m+[m[32m            discount = discount.add(cartItem.getDiscount());[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return discount;[m
+     }[m
+ [m
+[32m+[m
+     public void loadDateAndTime() {[m
+         //        Date[m
+         Date date = new Date();[m
+[36m@@ -223,4 +603,103 @@[m [mpublic class OrderManagementFormController implements Initializable {[m
+         timeline.play();[m
+ [m
+     }[m
+[32m+[m
+[32m+[m[32m    public void handleMouseClick(MouseEvent mouseEvent) {[m
+[32m+[m[32m        if (mouseEvent.getClickCount() == 2) {[m
+[32m+[m[32m            OrderDetailEntity selectedOrderDetail = tblOrderDetails.getSelectionModel().getSelectedItem();[m
+[32m+[m
+[32m+[m[32m            if (selectedOrderDetail != null) {[m
+[32m+[m
+[32m+[m[32m                labelOrderID.setText(selectedOrderDetail.getId().getOrderId());[m
+[32m+[m[32m                cmbProductID.setValue(selectedOrderDetail.getId().getProductId());[m
+[32m+[m
+[32m+[m[32m                ProductEntity product = productService.findProductById(selectedOrderDetail.getId().getProductId());[m
+[32m+[m[32m                if (product != null) {[m
+[32m+[m[32m                    txtProduct.setText(product.getName());[m
+[32m+[m[32m                    txtCategory.setText(product.getCategory());[m
+[32m+[m[32m                    txtSize.setText(product.getSize());[m
+[32m+[m[32m                }[m
+[32m+[m
+[32m+[m[32m                txtUnitPrice.setText(selectedOrderDetail.getUnitPrice().toString());[m
+[32m+[m[32m                txtQty.setText(selectedOrderDetail.getQty().toString());[m
+[32m+[m[32m                txtDiscount.setText(selectedOrderDetail.getDiscount().toString());[m
+[32m+[m[32m                txtTotal.setText(selectedOrderDetail.getTotal().toString());[m
+[32m+[m
+[32m+[m[32m                OrderEntity order = orderService.findOrderById(selectedOrderDetail.getId().getOrderId());[m
+[32m+[m[32m                if (order != null) {[m
+[32m+[m[32m                    cmbStaffID.setValue(order.getStaffId());[m
+[32m+[m[32m                    txtCustomerEmail.setText(order.getCustomerEmail());[m
+[32m+[m[32m                    txtCustomerContact.setText(order.getCustomerPhoneNumber());[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private boolean validateFields() {[m
+[32m+[m[32m        if (cmbProductID.getValue() == null || cmbProductID.getValue().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Product ID is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (txtProduct.getText() == null || txtProduct.getText().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Product Name is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (txtSize.getText() == null || txtSize.getText().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Size is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (txtUnitPrice.getText() == null || txtUnitPrice.getText().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Unit Price is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (txtQty.getText() == null || txtQty.getText().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Quantity is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (txtDiscount.getText() == null || txtDiscount.getText().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Discount is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            BigDecimal unitPrice = new BigDecimal(txtUnitPrice.getText());[m
+[32m+[m[32m            if (unitPrice.compareTo(BigDecimal.ZERO) <= 0) {[m
+[32m+[m[32m                AlertUtil.showAlert("Validation Error", "Unit Price must be a positive number.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m                return false;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        } catch (NumberFormatException e) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Unit Price must be a valid number.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            int qty = Integer.parseInt(txtQty.getText());[m
+[32m+[m[32m            if (qty <= 0) {[m
+[32m+[m[32m                AlertUtil.showAlert("Validation Error", "Quantity must be a positive integer.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m                return false;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        } catch (NumberFormatException e) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Quantity must be a valid integer.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            BigDecimal discount = new BigDecimal(txtDiscount.getText());[m
+[32m+[m[32m            if (discount.compareTo(BigDecimal.ZERO) < 0) {[m
+[32m+[m[32m                AlertUtil.showAlert("Validation Error", "Discount cannot be negative.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m                return false;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        } catch (NumberFormatException e) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Discount must be a valid number.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return true;[m
+[32m+[m[32m    }[m
+[32m+[m
+ }[m
+[1mdiff --git a/src/main/java/controller/staff/StaffDashboardFormController.java b/src/main/java/controller/staff/StaffDashboardFormController.java[m
+[1mindex 8e7b3a6..c028fd6 100644[m
+[1m--- a/src/main/java/controller/staff/StaffDashboardFormController.java[m
+[1m+++ b/src/main/java/controller/staff/StaffDashboardFormController.java[m
+[36m@@ -78,8 +78,9 @@[m [mpublic class StaffDashboardFormController {[m
+             FXMLLoader loader = new FXMLLoader(getClass().getResource("../../view/order_management_form.fxml"));[m
+             Parent root = loader.load();[m
+ [m
+[31m-            OrderManagementFormController orderController = loader.getController();[m
+[31m-            orderController.setRole("Staff");[m
+[32m+[m[32m            OrderManagementFormController controller = loader.getController();[m
+[32m+[m[32m            StaffEntity staff = StaffSession.getInstance().getStaff();[m
+[32m+[m[32m            controller.setRoleAndUser("Staff", staff.getStaffId());[m
+ [m
+             Stage stage = new Stage();[m
+             stage.setScene(new Scene(root));[m
+[1mdiff --git a/src/main/java/controller/supply/SupplyManagementFormController.java b/src/main/java/controller/supply/SupplyManagementFormController.java[m
+[1mindex c7ed09c..2907eda 100644[m
+[1m--- a/src/main/java/controller/supply/SupplyManagementFormController.java[m
+[1m+++ b/src/main/java/controller/supply/SupplyManagementFormController.java[m
+[36m@@ -286,24 +286,17 @@[m [mpublic class SupplyManagementFormController implements Initializable {[m
+ [m
+     @FXML[m
+     void btnAddSupplyCartOnAction(ActionEvent event) {[m
+[32m+[m[32m        if (!validateInputFields()) {[m
+[32m+[m[32m            return;[m
+[32m+[m[32m        }[m
+[32m+[m
+         String productId = cmbProductID.getValue();[m
+         String supplierId = cmbSupplierID.getValue();[m
+         String name = txtName.getText();[m
+         String category = cmbCategory.getValue();[m
+         String size = cmbSize.getValue();[m
+[31m-        String unitCostText = txtUnitCost.getText();[m
+[31m-        String qtyText = txtQty.getText();[m
+[31m-[m
+[31m-        int qty;[m
+[31m-        BigDecimal unitCost;[m
+[31m-[m
+[31m-        try {[m
+[31m-            qty = Integer.parseInt(qtyText);[m
+[31m-            unitCost = new BigDecimal(unitCostText);[m
+[31m-        } catch (NumberFormatException e) {[m
+[31m-            AlertUtil.showAlert("Validation Error", "Quantity and Unit Cost must be valid numbers.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[31m-            return;[m
+[31m-        }[m
+[32m+[m[32m        BigDecimal unitCost = new BigDecimal(txtUnitCost.getText());[m
+[32m+[m[32m        int qty = Integer.parseInt(txtQty.getText());[m
+ [m
+         SupplyCartEntity supplyCartItem = new SupplyCartEntity();[m
+         supplyCartItem.setProductId(productId);[m
+[36m@@ -410,6 +403,10 @@[m [mpublic class SupplyManagementFormController implements Initializable {[m
+ [m
+     @FXML[m
+     void btnUpdateOnAction(ActionEvent event) {[m
+[32m+[m[32m        if (!validateInputFields()) {[m
+[32m+[m[32m            return;[m
+[32m+[m[32m        }[m
+[32m+[m
+         SupplyEntity selectedSupply = tblSupplyTable.getSelectionModel().getSelectedItem();[m
+ [m
+         if (selectedSupply == null) {[m
+[36m@@ -419,22 +416,8 @@[m [mpublic class SupplyManagementFormController implements Initializable {[m
+ [m
+         String productId = cmbProductID.getValue();[m
+         String supplierId = cmbSupplierID.getValue();[m
+[31m-        String name = txtName.getText();[m
+[31m-        String category = cmbCategory.getValue();[m
+[31m-        String size = cmbSize.getValue();[m
+[31m-        String unitCostText = txtUnitCost.getText();[m
+[31m-        String qtyText = txtQty.getText();[m
+[31m-[m
+[31m-        int qty;[m
+[31m-        BigDecimal unitCost;[m
+[31m-[m
+[31m-        try {[m
+[31m-            qty = Integer.parseInt(qtyText);[m
+[31m-            unitCost = new BigDecimal(unitCostText);[m
+[31m-        } catch (NumberFormatException e) {[m
+[31m-            AlertUtil.showAlert("Validation Error", "Quantity and Unit Cost must be valid numbers.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[31m-            return;[m
+[31m-        }[m
+[32m+[m[32m        BigDecimal unitCost = new BigDecimal(txtUnitCost.getText());[m
+[32m+[m[32m        int qty = Integer.parseInt(txtQty.getText());[m
+ [m
+         SupplyEntity updatedSupply = new SupplyEntity([m
+                 new SupplyId(selectedSupply.getId().getSupplyId(), productId, supplierId),[m
+[36m@@ -568,4 +551,66 @@[m [mpublic class SupplyManagementFormController implements Initializable {[m
+             }[m
+         }[m
+     }[m
+[32m+[m
+[32m+[m[32m    private boolean validateInputFields() {[m
+[32m+[m[32m        if (cmbProductID.getValue() == null || cmbProductID.getValue().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Product ID is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (cmbSupplierID.getValue() == null || cmbSupplierID.getValue().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Supplier ID is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (txtName.getText() == null || txtName.getText().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Product Name is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (cmbCategory.getValue() == null || cmbCategory.getValue().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Category is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (cmbSize.getValue() == null || cmbSize.getValue().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Size is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (txtUnitCost.getText() == null || txtUnitCost.getText().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Unit Cost is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        if (txtQty.getText() == null || txtQty.getText().isEmpty()) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Quantity is required.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            int qty = Integer.parseInt(txtQty.getText());[m
+[32m+[m[32m            if (qty <= 0) {[m
+[32m+[m[32m                AlertUtil.showAlert("Validation Error", "Quantity must be a positive integer.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m                return false;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        } catch (NumberFormatException e) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Quantity must be a valid integer.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            BigDecimal unitCost = new BigDecimal(txtUnitCost.getText());[m
+[32m+[m[32m            if (unitCost.compareTo(BigDecimal.ZERO) <= 0) {[m
+[32m+[m[32m                AlertUtil.showAlert("Validation Error", "Unit Cost must be a positive number.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m                return false;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        } catch (NumberFormatException e) {[m
+[32m+[m[32m            AlertUtil.showAlert("Validation Error", "Unit Cost must be a valid number.", null, javafx.scene.control.Alert.AlertType.ERROR);[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return true;[m
+[32m+[m[32m    }[m
+[32m+[m
+ }[m
+[1mdiff --git a/src/main/java/entity/OrderDetailEntity.java b/src/main/java/entity/OrderDetailEntity.java[m
+[1mindex 025570b..55a5370 100644[m
+[1m--- a/src/main/java/entity/OrderDetailEntity.java[m
+[1m+++ b/src/main/java/entity/OrderDetailEntity.java[m
+[36m@@ -7,6 +7,8 @@[m [mimport lombok.AllArgsConstructor;[m
+ import lombok.Data;[m
+ import lombok.NoArgsConstructor;[m
+ [m
+[32m+[m[32mimport java.math.BigDecimal;[m
+[32m+[m
+ @Data[m
+ @NoArgsConstructor[m
+ @AllArgsConstructor[m
+[36m@@ -14,11 +16,19 @@[m [mimport lombok.NoArgsConstructor;[m
+ public class OrderDetailEntity {[m
+     @EmbeddedId[m
+     private OrderDetailId id;[m
+[31m-    private Double unitPrice;[m
+[32m+[m[32m    private BigDecimal unitPrice;[m
+     private Integer qty;[m
+[31m-    private Double discount;[m
+[31m-    private Double total;[m
+[32m+[m[32m    private BigDecimal discount;[m
+[32m+[m[32m    private BigDecimal total;[m
+ [m
+     @ManyToOne[m
+     private OrderEntity order;[m
+[32m+[m
+[32m+[m[32m    public OrderDetailEntity(OrderDetailId id, BigDecimal unitPrice, Integer qty, BigDecimal discount, BigDecimal total) {[m
+[32m+[m[32m        this.id = id;[m
+[32m+[m[32m        this.unitPrice = unitPrice;[m
+[32m+[m[32m        this.qty = qty;[m
+[32m+[m[32m        this.discount = discount;[m
+[32m+[m[32m        this.total = total;[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/main/java/entity/OrderEntity.java b/src/main/java/entity/OrderEntity.java[m
+[1mindex 37056c3..b22c401 100644[m
+[1m--- a/src/main/java/entity/OrderEntity.java[m
+[1m+++ b/src/main/java/entity/OrderEntity.java[m
+[36m@@ -7,6 +7,7 @@[m [mimport lombok.AllArgsConstructor;[m
+ import lombok.Data;[m
+ import lombok.NoArgsConstructor;[m
+ [m
+[32m+[m[32mimport java.math.BigDecimal;[m
+ import java.time.LocalDateTime;[m
+ import java.util.List;[m
+ [m
+[36m@@ -17,13 +18,25 @@[m [mimport java.util.List;[m
+ public class OrderEntity {[m
+     @Id[m
+     private String orderId;[m
+[31m-    private Double netTotal;[m
+[31m-    private Double totalDiscount;[m
+[32m+[m[32m    private BigDecimal netTotal;[m
+[32m+[m[32m    private BigDecimal totalDiscount;[m
+     private LocalDateTime dateAndTime;[m
+     private String staffId;[m
+     private String customerEmail;[m
+     private String customerPhoneNumber;[m
+ [m
+[31m-    @OneToMany(mappedBy = "orderId")[m
+[32m+[m[32m    @OneToMany(mappedBy = "order")[m
+     private List<OrderDetailEntity> orderDetails;[m
+[32m+[m
+[32m+[m[32m    public OrderEntity(String orderId, BigDecimal netTotal, BigDecimal totalDiscount,[m
+[32m+[m[32m                       LocalDateTime dateAndTime, String staffId,[m
+[32m+[m[32m                       String customerEmail, String customerPhoneNumber) {[m
+[32m+[m[32m        this.orderId = orderId;[m
+[32m+[m[32m        this.netTotal = netTotal;[m
+[32m+[m[32m        this.totalDiscount = totalDiscount;[m
+[32m+[m[32m        this.dateAndTime = dateAndTime;[m
+[32m+[m[32m        this.staffId = staffId;[m
+[32m+[m[32m        this.customerEmail = customerEmail;[m
+[32m+[m[32m        this.customerPhoneNumber = customerPhoneNumber;[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/main/java/repository/DaoFactory.java b/src/main/java/repository/DaoFactory.java[m
+[1mindex cb9b4ae..1edc7b4 100644[m
+[1m--- a/src/main/java/repository/DaoFactory.java[m
+[1m+++ b/src/main/java/repository/DaoFactory.java[m
+[36m@@ -21,6 +21,7 @@[m [mpublic class DaoFactory {[m
+             case STAFF_DAO:return (T) new StaffDaoImpl();[m
+             case SUPPLIER_DAO:return (T) new SupplierDaoImpl();[m
+             case SUPPLY_DAO:return (T) new SupplyDaoImpl();[m
+[32m+[m[32m            case ORDER_DETAIL_DAO:return (T) new OrderDetailDaoImpl();[m
+         }[m
+         return null;[m
+     }[m
+[1mdiff --git a/src/main/java/repository/custom/OrderDao.java b/src/main/java/repository/custom/OrderDao.java[m
+[1mindex 479d014..c1fff59 100644[m
+[1m--- a/src/main/java/repository/custom/OrderDao.java[m
+[1m+++ b/src/main/java/repository/custom/OrderDao.java[m
+[36m@@ -1,4 +1,16 @@[m
+ package repository.custom;[m
+ [m
+[31m-public interface OrderDao {[m
+[32m+[m[32mimport entity.OrderEntity;[m
+[32m+[m[32mimport repository.CrudRepository;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.Optional;[m
+[32m+[m
+[32m+[m[32mpublic interface OrderDao extends CrudRepository<OrderEntity> {[m
+[32m+[m[32m    boolean add(OrderEntity order);[m
+[32m+[m[32m    boolean update(OrderEntity order);[m
+[32m+[m[32m    boolean delete(String orderId);[m
+[32m+[m[32m    OrderEntity findById(String orderId);[m
+[32m+[m[32m    List<OrderEntity> findAll();[m
+[32m+[m[32m    Optional<String> getLastOrderId();[m
+ }[m
+[1mdiff --git a/src/main/java/repository/custom/impl/OrderDaoImpl.java b/src/main/java/repository/custom/impl/OrderDaoImpl.java[m
+[1mindex 2c2d16e..932912b 100644[m
+[1m--- a/src/main/java/repository/custom/impl/OrderDaoImpl.java[m
+[1m+++ b/src/main/java/repository/custom/impl/OrderDaoImpl.java[m
+[36m@@ -1,6 +1,107 @@[m
+ package repository.custom.impl;[m
+ [m
+[32m+[m[32mimport entity.OrderEntity;[m
+ import repository.custom.OrderDao;[m
+[32m+[m[32mimport util.CrudUtil;[m
+[32m+[m
+[32m+[m[32mimport java.sql.ResultSet;[m
+[32m+[m[32mimport java.sql.SQLException;[m
+[32m+[m[32mimport java.util.ArrayList;[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.Optional;[m
+ [m
+ public class OrderDaoImpl implements OrderDao {[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public boolean add(OrderEntity entity) {[m
+[32m+[m[32m        String sql = "INSERT INTO orders (OrderID, NetTotal, TotalDiscount, OrderDateAndTime, StaffID, CustomerEmail, CustomerPhoneNumber) VALUES (?, ?, ?, ?, ?, ?, ?)";[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            return CrudUtil.execute(sql, entity.getOrderId(), entity.getNetTotal(), entity.getTotalDiscount(),[m
+[32m+[m[32m                    entity.getDateAndTime(), entity.getStaffId(), entity.getCustomerEmail(), entity.getCustomerPhoneNumber());[m
+[32m+[m[32m        } catch (SQLException e) {[m
+[32m+[m[32m            e.printStackTrace();[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public boolean update(OrderEntity entity) {[m
+[32m+[m[32m        String sql = "UPDATE orders SET NetTotal = ?, TotalDiscount = ?, OrderDateAndTime = ?, StaffID = ?, CustomerEmail = ?, CustomerPhoneNumber = ? WHERE OrderID = ?";[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            return CrudUtil.execute(sql, entity.getNetTotal(), entity.getTotalDiscount(), entity.getDateAndTime(),[m
+[32m+[m[32m                    entity.getStaffId(), entity.getCustomerEmail(), entity.getCustomerPhoneNumber(), entity.getOrderId());[m
+[32m+[m[32m        } catch (SQLException e) {[m
+[32m+[m[32m            e.printStackTrace();[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public boolean delete(String id) {[m
+[32m+[m[32m        String sql = "DELETE FROM orders WHERE OrderID = ?";[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            return CrudUtil.execute(sql, id);[m
+[32m+[m[32m        } catch (SQLException e) {[m
+[32m+[m[32m            e.printStackTrace();[m
+[32m+[m[32m            return false;[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public OrderEntity findById(String id) {[m
+[32m+[m[32m        String sql = "SELECT * FROM orders WHERE OrderID = ?";[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            ResultSet resultSet = CrudUtil.execute(sql, id);[m
+[32m+[m[32m            if (resultSet.next()) {[m
+[32m+[m[32m                return new OrderEntity([m
+[32m+[m[32m                        resultSet.getString("OrderID"),[m
+[32m+[m[32m                        resultSet.getBigDecimal("NetTotal"),[m
+[32m+[m[32m                        resultSet.getBigDecimal("TotalDiscount"),[m
+[32m+[m[32m                        resultSet.getTimestamp("OrderDateAndTime").toLocalDateTime(),[m
+[32m+[m[32m                        resultSet.getString("StaffID"),[m
+[32m+[m[32m                        resultSet.getString("CustomerEmail"),[m
+[32m+[m[32m                        resultSet.getString("CustomerPhoneNumber")[m
+[32m+[m[32m                );[m
+[32m+[m[32m            }[m
+[32m+[m[32m        } catch (SQLException e) {[m
+[32m+[m[32m            e.printStackTrace();[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public List<OrderEntity> findAll() {[m
+[32m+[m[32m        List<OrderEntity> orderList = new ArrayList<>();[m
+[32m+[m[32m        String sql = "SELECT * FROM orders";[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            ResultSet resultSet = CrudUtil.execute(sql);[m
+[32m+[m[32m            while (resultSet.next()) {[m
+[32m+[m[32m                orderList.add(new OrderEntity([m
+[32m+[m[32m                        resultSet.getString("OrderID"),[m
+[32m+[m[32m                        resultSet.getBigDecimal("NetTotal"),[m
+[32m+[m[32m                        resultSet.getBigDecimal("TotalDiscount"),[m
+[32m+[m[32m                        resultSet.getTimestamp("OrderDateAndTime").toLocalDateTime(),[m
+[32m+[m[32m                        resultSet.getString("StaffID"),[m
+[32m+[m[32m                        resultSet.getString("CustomerEmail"),[m
+[32m+[m[32m                        resultSet.getString("CustomerPhoneNumber")[m
+[32m+[m[32m                ));[m
+[32m+[m[32m            }[m
+[32m+[m[32m        } catch (SQLException e) {[m
+[32m+[m[32m            e.printStackTrace();[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return orderList;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public Optional<String> getLastOrderId() {[m
+[32m+[m[32m        String sql = "SELECT OrderID FROM orders ORDER BY OrderID DESC LIMIT 1";[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            ResultSet resultSet = CrudUtil.execute(sql);[m
+[32m+[m[32m            if (resultSet.next()) {[m
+[32m+[m[32m                return Optional.of(resultSet.getString("OrderID"));[m
+[32m+[m[32m            }[m
+[32m+[m[32m        } catch (SQLException e) {[m
+[32m+[m[32m            e.printStackTrace();[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return Optional.empty();[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/main/java/service/ServiceFactory.java b/src/main/java/service/ServiceFactory.java[m
+[1mindex b4466d9..a2f6349 100644[m
+[1m--- a/src/main/java/service/ServiceFactory.java[m
+[1m+++ b/src/main/java/service/ServiceFactory.java[m
+[36m@@ -21,6 +21,7 @@[m [mpublic class ServiceFactory {[m
+             case STAFF_SERVICE:return (T) new StaffServiceImpl();[m
+             case SUPPLIER_SERVICE:return (T) new SupplierServiceImpl();[m
+             case SUPPLY_SERVICE:return (T) new SupplyServiceImpl();[m
+[32m+[m[32m            case ORDER_DETAIL_SERVICE:return (T) new OrderDetailServiceImpl();[m
+         }[m
+         return null;[m
+     }[m
+[1mdiff --git a/src/main/java/service/custom/OrderService.java b/src/main/java/service/custom/OrderService.java[m
+[1mindex c4db246..16362d8 100644[m
+[1m--- a/src/main/java/service/custom/OrderService.java[m
+[1m+++ b/src/main/java/service/custom/OrderService.java[m
+[36m@@ -1,6 +1,15 @@[m
+ package service.custom;[m
+ [m
+[32m+[m[32mimport entity.OrderEntity;[m
+ import service.SuperService;[m
+ [m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m
+ public interface OrderService extends SuperService {[m
+[32m+[m[32m    boolean addOrder(OrderEntity order);[m
+[32m+[m[32m    boolean updateOrder(OrderEntity order);[m
+[32m+[m[32m    boolean deleteOrder(String orderId);[m
+[32m+[m[32m    OrderEntity findOrderById(String orderId);[m
+[32m+[m[32m    List<OrderEntity> findAllOrders();[m
+[32m+[m[32m    String generateOrderId();[m
+ }[m
+[1mdiff --git a/src/main/java/service/custom/impl/OrderServiceImpl.java b/src/main/java/service/custom/impl/OrderServiceImpl.java[m
+[1mindex 0e305cc..ff7bc30 100644[m
+[1m--- a/src/main/java/service/custom/impl/OrderServiceImpl.java[m
+[1m+++ b/src/main/java/service/custom/impl/OrderServiceImpl.java[m
+[36m@@ -1,6 +1,139 @@[m
+ package service.custom.impl;[m
+ [m
+[32m+[m[32mimport entity.OrderDetailEntity;[m
+[32m+[m[32mimport entity.OrderEntity;[m
+[32m+[m[32mimport entity.ProductEntity;[m
+[32m+[m[32mimport repository.DaoFactory;[m
+[32m+[m[32mimport repository.custom.OrderDao;[m
+[32m+[m[32mimport repository.custom.OrderDetailDao;[m
+[32m+[m[32mimport repository.custom.ProductDao;[m
+ import service.custom.OrderService;[m
+[32m+[m[32mimport util.DaoType;[m
+[32m+[m
+[32m+[m[32mimport java.util.List;[m
+[32m+[m[32mimport java.util.Optional;[m
+ [m
+ public class OrderServiceImpl implements OrderService {[m
+[32m+[m[32m    private final OrderDao orderDao;[m
+[32m+[m[32m    private final OrderDetailDao orderDetailDao;[m
+[32m+[m[32m    private final ProductDao productDao;[m
+[32m+[m
+[32m+[m[32m    public OrderServiceImpl() {[m
+[32m+[m[32m        this.orderDao = DaoFactory.getInstance().getDaoType(DaoType.ORDER_DAO);[m
+[32m+[m[32m        this.orderDetailDao = DaoFactory.getInstance().getDaoType(DaoType.ORDER_DETAIL_DAO);[m
+[32m+[m[32m        this.productDao = DaoFactory.getInstance().getDaoType(DaoType.PRODUCT_DAO);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public boolean addOrder(OrderEntity order) {[m
+[32m+[m[32m        if (order == null || order.getOrderDetails() == null || order.getOrderDetails().isEmpty()) {[m
+[32m+[m[32m            throw new IllegalArgumentException("Invalid order details.");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        boolean isOrderAdded = orderDao.add(order);[m
+[32m+[m
+[32m+[m[32m        if (isOrderAdded) {[m
+[32m+[m[32m            for (OrderDetailEntity orderDetail : order.getOrderDetails()) {[m
+[32m+[m[32m                boolean isOrderDetailAdded = orderDetailDao.add(orderDetail);[m
+[32m+[m
+[32m+[m[32m                if (!isOrderDetailAdded || !updateProductStock(orderDetail.getId().getProductId(), -orderDetail.getQty())) {[m
+[32m+[m[32m                    return false;[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m[32m            return true;[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return false;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public boolean updateOrder(OrderEntity order) {[m
+[32m+[m[32m        if (order == null || order.getOrderDetails() == null || order.getOrderDetails().isEmpty()) {[m
+[32m+[m[32m            throw new IllegalArgumentException("Invalid order details.");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        OrderEntity oldOrder = orderDao.findById(order.getOrderId());[m
+[32m+[m
+[32m+[m[32m        if (oldOrder != null) {[m
+[32m+[m[32m            boolean isOrderUpdated = orderDao.update(order);[m
+[32m+[m
+[32m+[m[32m            if (isOrderUpdated) {[m
+[32m+[m[32m                for (OrderDetailEntity newDetail : order.getOrderDetails()) {[m
+[32m+[m[32m                    Optional<OrderDetailEntity> oldDetailOpt = oldOrder.getOrderDetails().stream()[m
+[32m+[m[32m                            .filter(od -> od.getId().getProductId().equals(newDetail.getId().getProductId()))[m
+[32m+[m[32m                            .findFirst();[m
+[32m+[m
+[32m+[m[32m                    if (oldDetailOpt.isPresent()) {[m
+[32m+[m[32m                        int oldQty = oldDetailOpt.get().getQty();[m
+[32m+[m[32m                        int newQty = newDetail.getQty();[m
+[32m+[m[32m                        int qtyDifference = newQty - oldQty;[m
+[32m+[m
+[32m+[m[32m                        boolean isStockUpdated = updateProductStock(newDetail.getId().getProductId(), -qtyDifference);[m
+[32m+[m
+[32m+[m[32m                        if (!isStockUpdated || !orderDetailDao.update(newDetail)) {[m
+[32m+[m[32m                            return false;[m
+[32m+[m[32m                        }[m
+[32m+[m[32m                    } else {[m
+[32m+[m[32m                        if (!orderDetailDao.add(newDetail) || !updateProductStock(newDetail.getId().getProductId(), -newDetail.getQty())) {[m
+[32m+[m[32m                            return false;[m
+[32m+[m[32m                        }[m
+[32m+[m[32m                    }[m
+[32m+[m[32m                }[m
+[32m+[m[32m                return true;[m
+[32m+[m[32m            }[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return false;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public boolean deleteOrder(String orderId) {[m
+[32m+[m[32m        OrderEntity order = orderDao.findById(orderId);[m
+[32m+[m
+[32m+[m[32m        if (order != null) {[m
+[32m+[m[32m            for (OrderDetailEntity orderDetail : order.getOrderDetails()) {[m
+[32m+[m[32m                boolean isStockUpdated = updateProductStock(orderDetail.getId().getProductId(), orderDetail.getQty());[m
+[32m+[m
+[32m+[m[32m                if (!isStockUpdated || !orderDetailDao.delete(orderDetail.getId())) {[m
+[32m+[m[32m                    return false;[m
+[32m+[m[32m                }[m
+[32m+[m[32m            }[m
+[32m+[m
+[32m+[m[32m            return orderDao.delete(orderId);[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        return false;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public OrderEntity findOrderById(String orderId) {[m
+[32m+[m[32m        return orderDao.findById(orderId);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public List<OrderEntity> findAllOrders() {[m
+[32m+[m[32m        return orderDao.findAll();[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public String generateOrderId() {[m
+[32m+[m[32m        Optional<String> lastOrderIdOpt = orderDao.getLastOrderId();[m
+[32m+[m[32m        if (lastOrderIdOpt.isPresent()) {[m
+[32m+[m[32m            String lastOrderId = lastOrderIdOpt.get();[m
+[32m+[m[32m            String numericPart = lastOrderId.substring(2);[m
+[32m+[m[32m            int newIdNumber = Integer.parseInt(numericPart) + 1;[m
+[32m+[m[32m            return String.format("OD%04d", newIdNumber);[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return "OD0001";[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private boolean updateProductStock(String productId, int quantityChange) {[m
+[32m+[m[32m        ProductEntity product = productDao.findById(productId);[m
+[32m+[m[32m        if (product != null) {[m
+[32m+[m[32m            int newQty = product.getQtyOnHand() + quantityChange;[m
+[32m+[m[32m            product.setQtyOnHand(Math.max(newQty, 0));[m
+[32m+[m[32m            return productDao.update(product);[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return false;[m
+[32m+[m[32m    }[m
+ }[m
+[1mdiff --git a/src/main/java/util/DaoType.java b/src/main/java/util/DaoType.java[m
+[1mindex 1528c68..432f354 100644[m
+[1m--- a/src/main/java/util/DaoType.java[m
+[1m+++ b/src/main/java/util/DaoType.java[m
+[36m@@ -6,5 +6,6 @@[m [mpublic enum DaoType {[m
+     PRODUCT_DAO,[m
+     SUPPLIER_DAO,[m
+     ORDER_DAO,[m
+[31m-    SUPPLY_DAO;[m
+[32m+[m[32m    SUPPLY_DAO,[m
+[32m+[m[32m    ORDER_DETAIL_DAO;[m
+ }[m
+[1mdiff --git a/src/main/java/util/ServiceType.java b/src/main/java/util/ServiceType.java[m
+[1mindex 0dc5148..6a112e5 100644[m
+[1m--- a/src/main/java/util/ServiceType.java[m
+[1m+++ b/src/main/java/util/ServiceType.java[m
+[36m@@ -6,5 +6,6 @@[m [mpublic enum ServiceType {[m
+     PRODUCT_SERVICE,[m
+     SUPPLIER_SERVICE,[m
+     ORDER_SERVICE,[m
+[31m-    SUPPLY_SERVICE;[m
+[32m+[m[32m    SUPPLY_SERVICE,[m
+[32m+[m[32m    ORDER_DETAIL_SERVICE;[m
+ }[m
+[1mdiff --git a/src/main/resources/view/admin_dashboard_form.fxml b/src/main/resources/view/admin_dashboard_form.fxml[m
+[1mindex d9c8aa4..e6fb952 100644[m
+[1m--- a/src/main/resources/view/admin_dashboard_form.fxml[m
+[1m+++ b/src/main/resources/view/admin_dashboard_form.fxml[m
+[36m@@ -6,8 +6,7 @@[m
+ <?import javafx.scene.text.Font?>[m
+ <?import javafx.scene.text.Text?>[m
+ [m
+[31m-[m
+[31m-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.AdminDashboardFormController">[m
+[32m+[m[32m<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.admin.AdminDashboardFormController">[m
+    <children>[m
+       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#14222d" height="150.0" layoutX="1.0" stroke="BLACK" strokeType="INSIDE" width="801.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />[m
+       <Text fill="WHITE" layoutX="62.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Admin Dashboard" textAlignment="CENTER" AnchorPane.leftAnchor="62.0" AnchorPane.rightAnchor="62.0">[m
+[36m@@ -45,7 +44,7 @@[m
+             <Font name="Poppins Bold" size="24.0" />[m
+          </font>[m
+       </JFXButton>[m
+[31m-      <JFXButton buttonType="RAISED" layoutX="225.0" layoutY="518.0" onAction="#btnReportOnAction" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Reports" textAlignment="CENTER" textFill="WHITE">[m
+[32m+[m[32m      <JFXButton fx:id="btnReports" buttonType="RAISED" layoutX="225.0" layoutY="518.0" onAction="#btnReportOnAction" prefHeight="50.0" prefWidth="350.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Reports" textAlignment="CENTER" textFill="WHITE">[m
+          <font>[m
+             <Font name="Poppins Bold" size="24.0" />[m
+          </font>[m
+[1mdiff --git a/src/main/resources/view/order_management_form.fxml b/src/main/resources/view/order_management_form.fxml[m
+[1mindex 0f35894..58951a6 100644[m
+[1m--- a/src/main/resources/view/order_management_form.fxml[m
+[1m+++ b/src/main/resources/view/order_management_form.fxml[m
+[36m@@ -12,8 +12,7 @@[m
+ <?import javafx.scene.text.Font?>[m
+ <?import javafx.scene.text.Text?>[m
+ [m
+[31m-[m
+[31m-<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.order.OrderManagementFormController">[m
+[32m+[m[32m<AnchorPane prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.order.OrderManagementFormController">[m
+    <children>[m
+       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#14222d" height="100.0" stroke="BLACK" strokeType="INSIDE" width="1000.0" />[m
+       <Text fill="WHITE" layoutX="135.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Order Management" textAlignment="CENTER">[m
+[36m@@ -21,7 +20,7 @@[m
+             <Font name="Poppins Bold" size="72.0" />[m
+          </font>[m
+       </Text>[m
+[31m-      <TableView fx:id="tblCart" layoutX="14.0" layoutY="138.0" prefHeight="200.0" prefWidth="700.0">[m
+[32m+[m[32m      <TableView fx:id="tblCart" layoutX="14.0" layoutY="138.0" prefHeight="200.0" prefWidth="700.0" onMouseClicked="#handleMouseClick">[m
+          <columns>[m
+             <TableColumn fx:id="colCartProductID" prefWidth="75.0" text="Product ID" />[m
+             <TableColumn fx:id="colCartProduct" prefWidth="125.0" text="Product" />[m
+[36m@@ -44,12 +43,12 @@[m
+          </font>[m
+       </JFXButton>[m
+       <TextField fx:id="txtSearchField" layoutX="715.0" layoutY="107.0" prefHeight="26.0" prefWidth="180.0" />[m
+[31m-      <JFXButton buttonType="RAISED" layoutX="903.0" layoutY="107.0" onAction="#btnSearchOnAction" prefHeight="20.0" prefWidth="75.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Search" textAlignment="CENTER" textFill="WHITE">[m
+[32m+[m[32m      <JFXButton fx:id="btnSearch" buttonType="RAISED" layoutX="903.0" layoutY="107.0" onAction="#btnSearchOnAction" prefHeight="20.0" prefWidth="75.0" style="-fx-background-color: #14222D; -fx-background-radius: 100;" text="Search" textAlignment="CENTER" textFill="WHITE">[m
+          <font>[m
+             <Font name="Poppins Bold" size="12.0" />[m
+          </font>[m
+       </JFXButton>[m
+[31m-      <Label layoutX="726.0" layoutY="165.0" text="Product ID :">[m
+[32m+[m[32m      <Label layoutX="726.0" layoutY="170.0" text="Product ID :">[m
+          <font>[m
+             <Font name="Poppins Regular" size="12.0" />[m
+          </font>[m
+[36m@@ -123,13 +122,13 @@[m
+             <Font name="Poppins Bold" size="12.0" />[m
+          </font>[m
+       </JFXButton>[m
+[31m-      <Label layoutX="848.0" layoutY="138.0" text="Staff ID :">[m
+[32m+[m[32m      <Label layoutX="840.0" layoutY="138.0" text="Staff ID :">[m
+          <font>[m
+             <Font name="Poppins Regular" size="12.0" />[m
+          </font>[m
+       </Label>[m
+[31m-      <JFXComboBox fx:id="cmbProductID" layoutX="803.0" layoutY="156.0" prefHeight="10.0" prefWidth="70.0" />[m
+[31m-      <JFXComboBox fx:id="cmbSupplyID" layoutX="905.0" layoutY="134.0" prefHeight="10.0" prefWidth="70.0" />[m
+[32m+[m[32m      <JFXComboBox fx:id="cmbProductID" layoutX="803.0" layoutY="161.0" prefHeight="10.0" prefWidth="100.0" />[m
+[32m+[m[32m      <JFXComboBox fx:id="cmbStaffID" layoutX="892.0" layoutY="134.0" prefHeight="10.0" prefWidth="100.0" />[m
+       <Label layoutX="725.0" layoutY="138.0" text="Order ID :">[m
+          <font>[m
+             <Font name="Poppins Regular" size="12.0" />[m
+[1mdiff --git a/src/main/resources/view/supply_management_form.fxml b/src/main/resources/view/supply_management_form.fxml[m
+[1mindex 60ecab3..6810519 100644[m
+[1m--- a/src/main/resources/view/supply_management_form.fxml[m
+[1m+++ b/src/main/resources/view/supply_management_form.fxml[m
+[36m@@ -12,7 +12,7 @@[m
+ <?import javafx.scene.text.Font?>[m
+ <?import javafx.scene.text.Text?>[m
+ [m
+[31m-<AnchorPane prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.supply.SupplyManagementFormController">[m
+[32m+[m[32m<AnchorPane prefHeight="650.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.supply.SupplyManagementFormController">[m
+    <children>[m
+       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#14222d" height="125.0" stroke="BLACK" strokeType="INSIDE" width="1000.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />[m
+       <Text fill="WHITE" layoutX="112.0" layoutY="88.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Supply Management" textAlignment="CENTER" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="111.40802001953125">[m
+[36m@@ -20,7 +20,7 @@[m
+             <Font name="Poppins Bold" size="72.0" />[m
+          </font>[m
+       </Text>[m
+[31m-      <TableView fx:id="tblSupplyTable" layoutX="21.0" layoutY="163.0" prefHeight="250.0" prefWidth="700.0" onMouseClicked="#handleMouseClick">[m
+[32m+[m[32m      <TableView fx:id="tblSupplyTable" layoutX="21.0" layoutY="163.0" prefHeight="250.0" prefWidth="700.0">[m
+          <columns>[m
+             <TableColumn fx:id="colSupplyID" text="SupplyID" />[m
+             <TableColumn fx:id="colSupplyTableProductID" text="Product ID" />[m
